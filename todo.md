@@ -1,8 +1,0 @@
-Features:
-
-- [] Record audio
-- [] 
-
-
-UI:
-- [] 
