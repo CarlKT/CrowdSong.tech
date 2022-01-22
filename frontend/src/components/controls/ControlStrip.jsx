@@ -5,17 +5,30 @@ class ControlStrip extends Component {
         super(props);
 
         this.changeBPM = this.changeBPM.bind(this);
+        this.inputChangeHandler = this.inputChangeHandler.bind(this);
+
+        this.state = {
+            selectedInput: "choose an input"
+        }
     }
 
     changeBPM(event) {
         this.props.changeBPM(parseInt(event.target.value));
     }
 
+    inputChangeHandler(event) {
+        this.props.recorder.createContext();
+        this.props.recorder.createInput(event.target.value);
+        this.setState({selectedInput: event.target.value})
+    }
+
     render() {
         return <div className="flex m-1 content-center">
             <div>
-                <label>input </label>
-                <input type="text"/>
+                <label>input: </label>
+                <select value={this.state.selectedInput} onChange={this.inputChangeHandler}>
+                    {this.props.inputs ? this.props.inputs.map(input => <option value={input.deviceId} key={input.deviceId}>{input.label}</option>): ""}
+                </select>
             </div>
             <div>
                 <label>bpm </label>
