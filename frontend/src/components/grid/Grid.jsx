@@ -21,6 +21,7 @@ class Grid extends Component {
 
     jumpPlayhead(i) {
         if (!this.props.recording && !this.props.playing) {
+            this.props.recorder.movePlayHead(i - 1);
             this.setState({
                 playheadPosition: (i - 1) * 64,
             });

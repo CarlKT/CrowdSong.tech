@@ -22,6 +22,7 @@ class DAW extends Component {
 
     componentDidMount() {
         this.recorder = new Recorder();
+        this.recorder.loadSong();
         this.recorder.createInput();
         this.recorder.getAudioInputs().then(inputs => this.setState({audioInputs: inputs}));
     }
@@ -53,7 +54,7 @@ class DAW extends Component {
     render() {
         return <div>
             <ControlStrip recordHandler={this.recordHandler} playHandler={this.playHandler} changeBPM={this.changeBPM} inputs={this.state.audioInputs} recorder={this.recorder}/>
-            <Grid tracks={4} bpm={this.state.bpm} recording={this.state.recording} playing={this.state.playing}/>
+            <Grid tracks={4} bpm={this.state.bpm} recording={this.state.recording} playing={this.state.playing} recorder={this.recorder}/>
         </div>
     }
 }

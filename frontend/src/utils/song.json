@@ -1,15 +1,14 @@
 {
     "title": "Song 1",
     "uuid": "283292391",
-    "tracks": {
-        "1": [
-            {"type": "audio", "start": 5.25, "data": "..." },
-            {"type": "midi", "start": 2.25,  "data": "..."}
-        ],
-        "2": [
-            {"type": "midi", "start": 5.25, "data": "..." },
-            {"type": "audio", "start": 2.25,  "data": "..."}
+    "clips": [
+        [
+            {"type": "audio", "track": 1, "start": 5.25, "data": "..." },
+            {"type": "midi",  "track": 0, "start": 2.25,  "data": "..."},
+            {"type": "midi",  "track": 3, "start": 5.25, "data": "..." },
+            {"type": "audio", "track:": 2, "start": 2.25,  "data": "..."}
 
         ]
-    }
+    ]
+    
 }
