@@ -1,6 +1,7 @@
 const audio_record = document.querySelector('.record');
 const audio_stop = document.querySelector('.stop');
 const audio_play = document.querySelector('.play');
+const audio_permission = document.querySelector('.permission');
 
 // Create the Oscillators
 class Oscillator{
@@ -46,10 +47,17 @@ class AMP{
     }
 }
 
+// recorder class
 class recordMIDI{
-    constructor(){
-        this.AudioContext = window.AudioContext || window.webkitAudioContext;
-        this.ctx = new AudioContext();
+    constructor(context){
+        this.ctx = context;
+        console.log("Constructor!");
+        console.log(this.ctx);
+        // this.recorderNode = this.ctx.getMediaStreamDestination();
+        // this.recorderNode = MediaStreamAudioDestinationNode.MediaStreamAudioDestinationNode();
+        this.recorderNode = this.ctx.createMediaStreamDestination();
+        console.log(this.recorderNode);
+
     }
     // Connected to MIDI
     connectedMIDI(){
@@ -72,7 +80,7 @@ class recordMIDI{
 
         this.osc1.oscConnect(this.amp.gain);
         this.amp.connect(this.ctx.destination);
-        this.amp.connect(this.ctx.getMediaStreamDestination());
+        this.amp.connect(this.recorderNode);
         this.amp.setVolume(0.0,0);
     }
     mtof(note){
@@ -122,9 +130,9 @@ class recordMIDI{
             break;
         }
     }
-    recordMIDI(){
+    recorder(){
 
-        var stream = ctx.getMediaStreamDestination();
+        var stream = this.recorderNode.stream;
 
         let chunks = [];
         let mediaRecorder = new MediaRecorder(stream);
@@ -189,7 +197,7 @@ class recordMIDI{
             this.Engine();
             console.log("Engine running...");
             // navigator.mediaDevices.getUserMedia({ audio:true }).then(stream => this.recordMIDI(stream));
-            this.recordMIDI();
+            this.recorder(this.recorderNode.stream);
         } else {
             console.log("No MIDI detected :( ");
         }
@@ -198,8 +206,25 @@ class recordMIDI{
 
 
 // var audioCtx = new AudioContext();
-var AudioContext = window.AudioContext || window.webkitAudioContext;
-var audioCtx = new AudioContext();
+function getAudioContext() {
+    return new Promise((resolve, reject) => { 
+        resolve(
+            new (window.AudioContext || window.webkitAudioContext)()
+        )
+        reject(
+            "Your browser rejected a request to access the Web Audio API, a required component"
+        )
+    }
+                      );
+}
 
-var midi_recorder = new recordMIDI();
-midi_recorder.record();
+audio_permission.onclick = function(){
+
+    // var audioCtx = new window.AudioContext();
+    var audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+
+    var midi_recorder = new recordMIDI(audioCtx);
+    midi_recorder.record();
+
+}
+
