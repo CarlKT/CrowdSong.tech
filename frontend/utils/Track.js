@@ -20,6 +20,18 @@ class Track {
         this.clips[clip.start_pos] = clip;
     }
 
+    scheduleClips(audioCtx) {
+        // Should be called outside of schedule clips
+        // audioCtx.suspend();
+        
+        for (key in this.clips) {
+            setTimeout(() => {
+                this.clips[key].play();
+            }, key);
+        }
+    }
+
+
     // We want to add clock listeners to each clip for each track, then start the clock.
     play_track(start_time) {
         for (key in this.clips) {
