@@ -1,8 +1,8 @@
 Features:
 
-[] Record audio
-[] 
+- [] Record audio
+- [] 
 
 
 UI:
-[] 
+- [] 
