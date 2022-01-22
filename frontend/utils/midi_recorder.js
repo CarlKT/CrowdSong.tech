@@ -66,8 +66,7 @@ class recordMIDI{
                 navigator.requestMIDIAccess().then(midiAccess => {
                     Array.from(midiAccess.inputs).forEach(input => {
                         input[1].onmidimessage = (msg) => {
-                            console.log(msg.data);
-                            this.midiOnMIDImessage(msg.data);}
+                            this.midiOnMIDImessage(msg);}
                     })
                 });
                 return true;
@@ -121,8 +120,8 @@ class recordMIDI{
     }
     midiOnMIDImessage(event){
         var data = event.data;
-        var cmd = data[0] >> 4;
-        var channel = data[0] & 0xf;
+        // var cmd = data[0] >> 4;
+        // var channel = data[0] & 0xf;
         var type = data[0] & 0xf0;
         var pitch = data[1];
         var velocity = data[2];
