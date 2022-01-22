@@ -57,7 +57,7 @@ class recordMIDI{
         // this.recorderNode = MediaStreamAudioDestinationNode.MediaStreamAudioDestinationNode();
         this.recorderNode = this.ctx.createMediaStreamDestination();
         console.log(this.recorderNode);
-
+        this.activeNotes = [];
     }
     // Connected to MIDI
     connectedMIDI(){
