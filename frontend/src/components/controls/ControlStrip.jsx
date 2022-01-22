@@ -4,6 +4,10 @@ class ControlStrip extends Component {
     render() {
         return <div className="flex m-1 content-center">
             <div>
+                <label>input </label>
+                <input type="text"/>
+            </div>
+            <div>
                 <label>bpm </label>
                 <input type="number" min="0" max="200"/>
             </div>
