@@ -71,6 +71,7 @@ class recordMIDI{
 
         this.osc1.oscConnect(this.amp.gain);
         this.amp.connect(this.ctx.destination);
+        this.amp.connect(this.ctx.getMediaStreamDestination());
         this.amp.setVolume(0.0,0);
     }
     mtof(note){
@@ -112,9 +113,11 @@ class recordMIDI{
         switch (type) {
         case 144:
             this.noteOff(pitch, velocity/127);
+            console.log(this.mtof(pitch));
             break;
         case 128:
             this.noteOn(pitch);
+            console.log("Released");
             break;
         }
     }
@@ -126,6 +129,7 @@ class recordMIDI{
         audio_record.onclick = function() {
             // Optional count_in feature
             // count_in.start();
+            console.log("Recording...");
             mediaRecorder.start();
             
             // playhead.start();
@@ -146,6 +150,7 @@ class recordMIDI{
 
         audio_stop.onclick = function() {
             mediaRecorder.stop();
+            console.log("Recording stopped...");
 
             // playhead.stop();
             audio_stop.disabled = true;
@@ -174,12 +179,13 @@ class recordMIDI{
         }
 
     }
-    main(){
+    main(stream){
         if (this.connectedMIDI()){
             console.log("MIDI Connected!");
             this.Engine();
             console.log("Engine running...");
-            navigator.mediaDevices.getUserMedia({ audio:true }).then(stream => this.recordMIDI(stream));
+            // navigator.mediaDevices.getUserMedia({ audio:true }).then(stream => this.recordMIDI(stream));
+            this.recordMIDI(stream);
         } else {
             console.log("No MIDI detected :( ");
         }
@@ -188,4 +194,4 @@ class recordMIDI{
 
 var audioCtx = new AudioContext();
 var midi_recorder = new recordMIDI(audioCtx);
-midi_recorder.main();
+midi_recorder.main(audioCtx.getMediaStreamDestination().stream);
