@@ -47,8 +47,9 @@ class AMP{
 }
 
 class recordMIDI{
-    constructor(context){
-        this.ctx = context;
+    constructor(){
+        this.AudioContext = window.AudioContext || window.webkitAudioContext;
+        this.ctx = new AudioContext();
     }
     // Connected to MIDI
     connectedMIDI(){
@@ -121,7 +122,9 @@ class recordMIDI{
             break;
         }
     }
-    recordMIDI(stream){
+    recordMIDI(){
+
+        var stream = ctx.getMediaStreamDestination();
 
         let chunks = [];
         let mediaRecorder = new MediaRecorder(stream);
@@ -180,13 +183,13 @@ class recordMIDI{
         }
 
     }
-    main(stream){
+    record(){
         if (this.connectedMIDI()){
             console.log("MIDI Connected!");
             this.Engine();
             console.log("Engine running...");
             // navigator.mediaDevices.getUserMedia({ audio:true }).then(stream => this.recordMIDI(stream));
-            this.recordMIDI(stream);
+            this.recordMIDI();
         } else {
             console.log("No MIDI detected :( ");
         }
@@ -198,5 +201,5 @@ class recordMIDI{
 var AudioContext = window.AudioContext || window.webkitAudioContext;
 var audioCtx = new AudioContext();
 
-var midi_recorder = new recordMIDI(audioCtx);
-midi_recorder.main(audioCtx.getMediaStreamDestination().stream);
+var midi_recorder = new recordMIDI();
+midi_recorder.record();
