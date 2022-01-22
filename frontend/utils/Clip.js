@@ -63,14 +63,11 @@ class AudioClip extends Clip {
 
     play() {
         console.log("Preparing and playing audio")
-        const baseCtx = new AudioContext();
-        baseCtx.decodeAudioData(this.chunks).then(function(decodedData) {
-                console.log(decodedData);
-           });
-        // const blob = new Blob(this.chunks);
-        // const audioUrl = URL.createObjectURL(blob);
-        // const audio = new Audio(audioUrl);
-        // audio.play();
+        
+        const blob = new Blob(this.chunks);
+        const audioUrl = URL.createObjectURL(blob);
+        const audio = new Audio(audioUrl);
+        audio.play();
     }
 }
 
@@ -105,19 +102,22 @@ class AudioClip_ctx extends Clip {
         this.mediaRecorder.stop();
     }
 
-    play() {
-        console.log("Preparing and playing audio");
-        const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+    // play() {
+    //     console.log("Preparing and playing audio");
+    //     const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
         
-        const blob = new Blob(this.chunks);
-        const audioUrl = URL.createObjectURL(blob);
-        const audio = new Audio(audioUrl);
+    //     const blob = new Blob(this.chunks);
+    //     const audioUrl = URL.createObjectURL(blob);
+    //     const audio = new Audio(audioUrl);
 
-        const source = audioCtx.createMediaElementSource(audio);
-        source.connect(audioCtx.destination);
-        // audioCtx.start();
-    }
+    //     const source = audioCtx.createMediaElementSource(audio);
+    //     source.connect(audioCtx.destination);
+    //     // audioCtx.start();
+    // }
+}
 
+class MidiClip {
+    super(track,  start_pos, name);
 }
 
 function main() {
