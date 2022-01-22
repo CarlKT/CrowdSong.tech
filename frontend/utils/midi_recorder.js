@@ -53,10 +53,11 @@ class recordMIDI{
         this.ctx = context;
         console.log("Constructor!");
         console.log(this.ctx);
+        console.log("Destination!");
+        console.log(this.ctx.destination);
         // this.recorderNode = this.ctx.getMediaStreamDestination();
         // this.recorderNode = MediaStreamAudioDestinationNode.MediaStreamAudioDestinationNode();
         this.recorderNode = this.ctx.createMediaStreamDestination();
-        console.log(this.recorderNode);
 
         this.activeNotes = [];
 
