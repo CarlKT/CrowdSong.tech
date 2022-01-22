@@ -1,6 +1,7 @@
 const audio_record = document.querySelector('.record');
 const audio_stop = document.querySelector('.stop');
 const audio_play = document.querySelector('.play');
+const audio_permission = document.querySelector('.permission');
 
 // Create the Oscillators
 class Oscillator{
@@ -46,15 +47,36 @@ class AMP{
     }
 }
 
+// recorder class
 class recordMIDI{
-    constructor(){
-        this.AudioContext = window.AudioContext || window.webkitAudioContext;
-        this.ctx = new AudioContext();
+    constructor(context){
+        this.ctx = context;
+        console.log("Constructor!");
+        console.log(this.ctx);
+        console.log("Destination!");
+        console.log(this.ctx.destination);
+        // this.recorderNode = this.ctx.getMediaStreamDestination();
+        // this.recorderNode = MediaStreamAudioDestinationNode.MediaStreamAudioDestinationNode();
+        this.recorderNode = this.ctx.createMediaStreamDestination();
+
+        this.activeNotes = [];
+
+        this.settings = {
+            attack: 0.05,
+            release: 0.05,
+            portamento: 0.05,
+        };
     }
     // Connected to MIDI
     connectedMIDI(){
         if (typeof navigator.requestMIDIAccess === "function"){
             if (navigator.requestMIDIAccess){
+                navigator.requestMIDIAccess().then(midiAccess => {
+                    Array.from(midiAccess.inputs).forEach(input => {
+                        input[1].onmidimessage = (msg) => {
+                            this.midiOnMIDImessage(msg);}
+                    })
+                });
                 return true;
             } else {
                 return false;
@@ -72,8 +94,11 @@ class recordMIDI{
 
         this.osc1.oscConnect(this.amp.gain);
         this.amp.connect(this.ctx.destination);
-        this.amp.connect(this.ctx.getMediaStreamDestination());
+        this.amp.connect(this.recorderNode);
         this.amp.setVolume(0.0,0);
+
+        this.osc1.oscStart(0);
+
     }
     mtof(note){
         return 440 * Math.pow(2, (note - 69) / 12);
@@ -106,25 +131,25 @@ class recordMIDI{
     }
     midiOnMIDImessage(event){
         var data = event.data;
-        var cmd = data[0] >> 4;
-        var channel = data[0] & 0xf;
+        // var cmd = data[0] >> 4;
+        // var channel = data[0] & 0xf;
         var type = data[0] & 0xf0;
         var pitch = data[1];
         var velocity = data[2];
         switch (type) {
         case 144:
-            this.noteOff(pitch, velocity/127);
+            this.noteOn(pitch, velocity/127);
             console.log(this.mtof(pitch));
             break;
         case 128:
-            this.noteOn(pitch);
+            this.noteOff(pitch);
             console.log("Released");
             break;
         }
     }
-    recordMIDI(){
+    recorder(){
 
-        var stream = ctx.getMediaStreamDestination();
+        var stream = this.recorderNode.stream;
 
         let chunks = [];
         let mediaRecorder = new MediaRecorder(stream);
@@ -189,7 +214,7 @@ class recordMIDI{
             this.Engine();
             console.log("Engine running...");
             // navigator.mediaDevices.getUserMedia({ audio:true }).then(stream => this.recordMIDI(stream));
-            this.recordMIDI();
+            this.recorder(this.recorderNode.stream);
         } else {
             console.log("No MIDI detected :( ");
         }
@@ -198,8 +223,25 @@ class recordMIDI{
 
 
 // var audioCtx = new AudioContext();
-var AudioContext = window.AudioContext || window.webkitAudioContext;
-var audioCtx = new AudioContext();
+function getAudioContext() {
+    return new Promise((resolve, reject) => { 
+        resolve(
+            new (window.AudioContext || window.webkitAudioContext)()
+        )
+        reject(
+            "Your browser rejected a request to access the Web Audio API, a required component"
+        )
+    }
+                      );
+}
 
-var midi_recorder = new recordMIDI();
-midi_recorder.record();
+audio_permission.onclick = function(){
+
+    // var audioCtx = new window.AudioContext();
+    var audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+
+    var midi_recorder = new recordMIDI(audioCtx);
+    midi_recorder.record();
+
+}
+
