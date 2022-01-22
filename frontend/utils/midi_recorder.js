@@ -95,7 +95,7 @@ class recordMIDI{
         this.osc1.oscConnect(this.amp.gain);
         this.amp.connect(this.ctx.destination);
         this.amp.connect(this.recorderNode);
-        this.amp.setVolume(0.0,0);
+        this.amp.setVolume(0.5,0);
     }
     mtof(note){
         return 440 * Math.pow(2, (note - 69) / 12);
