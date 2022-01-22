@@ -1,3 +1,4 @@
+//! DEPRECATED: Use AudioClip instead 
 const audio_record = document.querySelector('.record');
 const audio_stop = document.querySelector('.stop');
 const audio_play = document.querySelector('.play');
