@@ -176,8 +176,16 @@ class recordMIDI{
     }
     main(){
         if (this.connectedMIDI()){
+            console.log("MIDI Connected!");
             this.Engine();
-            this.recordMIDI();
+            console.log("Engine running...");
+            navigator.mediaDevices.getUserMedia({ audio:true }).then(stream => this.recordMIDI(stream));
+        } else {
+            console.log("No MIDI detected :( ");
         }
     }
 }
+
+var audioCtx = new AudioContext();
+var midi_recorder = new recordMIDI(audioCtx);
+midi_recorder.recordMIDI();
