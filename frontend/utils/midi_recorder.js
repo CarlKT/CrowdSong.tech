@@ -1,4 +1,6 @@
-// check if a MIDI Device is connected
+const audio_record = document.querySelector('.record');
+const audio_stop = document.querySelector('.stop');
+const audio_play = document.querySelector('.play');
 
 // Create the Oscillators
 class Oscillator{
@@ -25,6 +27,25 @@ class Oscillator{
     }
 }
 
+// Create the AMP
+class AMP{
+    constructor(ctx){
+        this.gain = ctx.createGain();
+    }
+    setVolume(volume, time){
+        this.gain.gain.setTargetAtTime(volume, 0, time);
+    }
+    connect(i){
+        this.gain.connect(i);
+    }
+    cancel(){
+        this.gain.gain.cancelScheduledValues(0);
+    }
+    disconnect(){
+        this.gain.disconnect(0);
+    }
+}
+
 class recordMIDI{
     constructor(context){
         this.ctx = context;
@@ -41,16 +62,11 @@ class recordMIDI{
             return false;
         }
     }
-    // Audio Context
-    // createContext(){
-    //     this.ctx = new AudioContext();
-    // }
-    // Audio Engine
     Engine(){
         this.osc1 = new Oscillator(this.ctx);
         this.osc1.setOscType('sine');
 
-        this.ctx.createGain();
+        // this.gain  = this.ctx.createGain();
         this.amp = new Amp(this.ctx);
 
         this.osc1.connect(self.amp.gain);
@@ -102,7 +118,67 @@ class recordMIDI{
             break;
         }
     }
+    recordMIDI(stream){
 
+        let chunks = [];
+        let recorder = new MediaRecorder(stream);
+
+        audio_record.onclick = function() {
+            // Optional count_in feature
+            // count_in.start();
+            mediaRecorder.start();
+            
+            // playhead.start();
+            audio_stop.disabled = false;
+            audio_record.disabled = true;
+            audio_record.style.background = "red";
+
+            setTimeout(() => {
+                mediaRecorder.stop();
+                
+                audio_stop.disabled = true;
+                audio_record.disabled = false;
+                
+                audio_record.style.background = "";
+                audio_record.style.color = "";
+            }, 3000);   //* Dummy value, to change later
+        }
+
+        audio_stop.onclick = function() {
+            mediaRecorder.stop();
+
+            // playhead.stop();
+            audio_stop.disabled = true;
+            audio_record.disabled = false;
+            audio_record.style.background = "";
+            audio_record.style.color = "";
+        }
+
+        mediaRecorder.addEventListener("dataavailable", event => {
+            chunks.push(event.data);
+        })
+
+        // mediaRecorder.onstop = function(e) {
+        //     const blob = new Blob(chunks);
+        //     const audioUrl = URL.createObjectURL(blob);
+        //     const audio = new Audio(audioUrl);
+        //     audio.play();
+        // }
+
+        audio_play.onclick = function () {
+            console.log("Preparing and playing audio")
+            const blob = new Blob(chunks);
+            const audioUrl = URL.createObjectURL(blob);
+            const audio = new Audio(audioUrl);
+            audio.play();
+        }
+
+    }
+    main(){
+        if (this.connectedMIDI()){
+            this.Engine();
+            this.recordMIDI();
+        }
 }
 
 
