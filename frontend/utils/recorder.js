@@ -1,12 +1,12 @@
-const record = document.querySelector('.record');
-const stop = document.querySelector('.stop');
+const audio_record = document.querySelector('.record');
+const audio_stop = document.querySelector('.stop');
+const audio_play = document.querySelector('.play');
 
 //* some constants that may be useful later
 // const playhead = document.querySelector('.playhead');
 // const armed = document.querySelector('.armed');
-// const play = document.querySelector('.play');
 
-stop.disabled = true;
+audio_stop.disabled = true;
 
 navigator.mediaDevices.getUserMedia({ audio: true })
     .then(stream => {
@@ -14,36 +14,50 @@ navigator.mediaDevices.getUserMedia({ audio: true })
         let chunks = [];
         const mediaRecorder = new MediaRecorder(stream);
 
-        record.onclick = function() {
+        audio_record.onclick = function() {
             // Optional count_in feature
             // count_in.start();
             mediaRecorder.start();
             
             // playhead.start();
-            stop.disabled = false;
-            record.disabled = true;
+            audio_stop.disabled = false;
+            audio_record.disabled = true;
+            audio_record.style.background = "red";
 
             setTimeout(() => {
                 mediaRecorder.stop();
                 
-                stop.disabled = true;
-                record.disabled = false;
+                audio_stop.disabled = true;
+                audio_record.disabled = false;
+                
+                audio_record.style.background = "";
+                audio_record.style.color = "";
             }, 3000);   //* Dummy value, to change later
         }
 
-        stop.onclick = function() {
+        audio_stop.onclick = function() {
             mediaRecorder.stop();
 
             // playhead.stop();
-            stop.disabled = true;
-            record.disabled = false;
+            audio_stop.disabled = true;
+            audio_record.disabled = false;
+            audio_record.style.background = "";
+            audio_record.style.color = "";
         }
 
         mediaRecorder.addEventListener("dataavailable", event => {
             chunks.push(event.data);
         })
 
-        mediaRecorder.onstop = function(event) {
+        // mediaRecorder.onstop = function(e) {
+        //     const blob = new Blob(chunks);
+        //     const audioUrl = URL.createObjectURL(blob);
+        //     const audio = new Audio(audioUrl);
+        //     audio.play();
+        // }
+
+        audio_play.onclick = function () {
+            console.log("Preparing and playing audio")
             const blob = new Blob(chunks);
             const audioUrl = URL.createObjectURL(blob);
             const audio = new Audio(audioUrl);
