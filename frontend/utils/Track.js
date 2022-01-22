@@ -1,4 +1,4 @@
-// const arm = document.querySelector('.arm');
+const clock = document.querySelector('.clock');
 // const 
 
 class Track {
@@ -21,11 +21,11 @@ class Track {
     }
 
     // We want to add clock listeners to each clip for each track, then start the clock.
-    play_track() {
+    play_track(start_time) {
         for (key in this.clips) {
-            Track.addClockListener(key, event => {
+            setTimeout(() => {
                 this.clips[key].play();
-            });
+            }, key);
         }
     }
 }

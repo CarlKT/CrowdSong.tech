@@ -63,15 +63,65 @@ class AudioClip extends Clip {
 
     play() {
         console.log("Preparing and playing audio")
-        const blob = new Blob(this.chunks);
-        const audioUrl = URL.createObjectURL(blob);
-        const audio = new Audio(audioUrl);
-        audio.play();
+        const baseCtx = new AudioContext();
+        baseCtx.decodeAudioData(this.chunks).then(function(decodedData) {
+                console.log(decodedData);
+           });
+        // const blob = new Blob(this.chunks);
+        // const audioUrl = URL.createObjectURL(blob);
+        // const audio = new Audio(audioUrl);
+        // audio.play();
     }
 }
 
+
+class AudioClip_ctx extends Clip {
+
+    constructor(track, start_pos, name) {
+        super(track,  start_pos, name);
+        navigator.mediaDevices.getUserMedia({ audio: true })
+            .then(stream => {
+                console.log('getUserMedia supported.');
+                this.mediaRecorder = new MediaRecorder(stream);
+        });
+            
+        this.chunks = [];
+    }
+
+    // Override
+    start() {
+        this.chunks = [];
+        console.log("Started recording " + this.to_string);
+
+        this.mediaRecorder.start();
+        this.mediaRecorder.addEventListener("dataavailable", event => {
+            this.chunks.push(event.data);
+        });
+    }
+
+    stop() {
+        console.log("Recording " + this.to_string + " stopped");
+
+        this.mediaRecorder.stop();
+    }
+
+    play() {
+        console.log("Preparing and playing audio");
+        const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+        
+        const blob = new Blob(this.chunks);
+        const audioUrl = URL.createObjectURL(blob);
+        const audio = new Audio(audioUrl);
+
+        const source = audioCtx.createMediaElementSource(audio);
+        source.connect(audioCtx.destination);
+        // audioCtx.start();
+    }
+
+}
+
 function main() {
-    const clip = new AudioClip("T1", "0:00", "hello world!")
+    const clip = new AudioClip_ctx("T1", "0:00", "hello world!")
     audio_record.onclick = function() {
         // Optional count_in feature
         // count_in.start();
@@ -104,7 +154,12 @@ function main() {
     }
 
     audio_play.onclick = function() {
+        audio_play.style.background = "green";
         clip.play();
+        setTimeout(() => {
+            audio_play.style.background = "";
+            audio_play.style.color = "";
+        }, 3000);
     }
 }
 
