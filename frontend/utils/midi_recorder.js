@@ -179,6 +179,5 @@ class recordMIDI{
             this.Engine();
             this.recordMIDI();
         }
+    }
 }
-
-
