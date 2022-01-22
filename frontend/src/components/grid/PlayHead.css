@@ -1,0 +1,5 @@
+#playhead {
+    position: absolute;
+    border-left: 2px solid black;
+    height: 100%;
+}
