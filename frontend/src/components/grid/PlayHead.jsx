@@ -13,7 +13,6 @@ class PlayHead extends Component {
                     transitionDuration: (4096 - this.props.x)/(this.props.bpm * 16) * 60 + "s"
                 }
         }
-        console.log(this.props.moving)
         return <div id="playhead" style={style}></div>
     }
 }

@@ -48,7 +48,14 @@ class Grid extends Component {
         let gridTracks = [];
         for (let i = 0; i < this.props.tracks; i++) {
             trackHeaders.push(<TrackHeader key={i} i={i} selectTrack={this.selectTrack} selectedTrack={this.state.selectedTrack}/>)
-            gridTracks.push(<Track key={i} selectTrack={this.state.selectedTrack}/>)
+            gridTracks.push(<Track 
+                            key={i} i={i} 
+                            selectedTrack={this.state.selectedTrack} 
+                            recording={this.props.recording} 
+                            clips={[]} 
+                            playheadPosition={this.state.playheadPosition}
+                            bpm={this.props.bpm}
+                        />)
         }
         return <div id="grid">
             <div id="grid-corner"></div>

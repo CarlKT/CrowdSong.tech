@@ -2,6 +2,8 @@ import { Component } from "react";
 import ControlStrip from "./controls/ControlStrip";
 import Grid from "./grid/Grid";
 
+import Recorder from "../utils/recorder";
+
 class DAW extends Component {
     constructor(props) {
         super(props);
@@ -10,6 +12,7 @@ class DAW extends Component {
         this.playHandler = this.playHandler.bind(this);
         this.recordHandler = this.recordHandler.bind(this);
 
+
         this.state = {
             bpm: 120,
             recording: false,
@@ -17,12 +20,18 @@ class DAW extends Component {
         };
     }
 
+    componentDidMount() {
+        this.recorder = new Recorder();
+        this.recorder.createInput();
+        this.recorder.getAudioInputs().then(inputs => this.setState({audioInputs: inputs}));
+    }
+
     recordHandler() {
         if (this.state.recording) {
-
+            this.recorder.stopRecordingInput();
             this.setState({recording: false})
         } else {
-
+            this.recorder.startRecordingInput();
             this.setState({recording: true})
         }
     }
@@ -43,7 +52,7 @@ class DAW extends Component {
 
     render() {
         return <div>
-            <ControlStrip recordHandler={this.recordHandler} playHandler={this.playHandler} changeBPM={this.changeBPM} />
+            <ControlStrip recordHandler={this.recordHandler} playHandler={this.playHandler} changeBPM={this.changeBPM} inputs={this.state.audioInputs} recorder={this.recorder}/>
             <Grid tracks={4} bpm={this.state.bpm} recording={this.state.recording} playing={this.state.playing}/>
         </div>
     }
