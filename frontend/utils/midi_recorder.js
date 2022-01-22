@@ -65,7 +65,10 @@ class recordMIDI{
             if (navigator.requestMIDIAccess){
                 navigator.requestMIDIAccess().then(midiAccess => {
                     Array.from(midiAccess.inputs).forEach(input => {
-                        input[1].onmidimessage = (msg) => {this.midiOnMIDImessage(msg);}
+                        console.log(input);
+                        input[1].onmidimessage = (msg) => {
+                            console.log(msg);
+                            this.midiOnMIDImessage(msg);}
                     })
                 });
                 return true;
