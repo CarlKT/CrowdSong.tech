@@ -135,11 +135,11 @@ class recordMIDI{
         var velocity = data[2];
         switch (type) {
         case 144:
-            this.noteOff(pitch, velocity/127);
+            this.noteOn(pitch, velocity/127);
             console.log(this.mtof(pitch));
             break;
         case 128:
-            this.noteOn(pitch);
+            this.noteOff(pitch);
             console.log("Released");
             break;
         }
