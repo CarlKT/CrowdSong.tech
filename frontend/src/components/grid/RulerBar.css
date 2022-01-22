@@ -1,0 +1,6 @@
+.ruler-bar {
+    text-align: left;
+    position: relative;
+    width: 4rem;
+    border-left: 1px solid black;
+}

@@ -171,11 +171,12 @@ class recordMIDI{
         // }
 
         audio_play.onclick = function () {
-            console.log("Preparing and playing audio")
+            console.log("Preparing and playing audio");
             const blob = new Blob(chunks);
             const audioUrl = URL.createObjectURL(blob);
             const audio = new Audio(audioUrl);
             audio.play();
+            console.log("done playing audio");
         }
 
     }

@@ -1,0 +1,12 @@
+.track-header {
+    height: 6rem;
+    background-color: gray;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-evenly;
+    border-bottom: 2px solid black;
+}
+
+.selected {
+    background-color: darkcyan;
+}
