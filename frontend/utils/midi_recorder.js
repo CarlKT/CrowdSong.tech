@@ -67,9 +67,9 @@ class recordMIDI{
         this.osc1.setOscType('sine');
 
         // this.gain  = this.ctx.createGain();
-        this.amp = new Amp(this.ctx);
+        this.amp = new AMP(this.ctx);
 
-        this.osc1.connect(self.amp.gain);
+        this.osc1.oscConnect(this.amp.gain);
         this.amp.connect(this.ctx.destination);
         this.amp.setVolume(0.0,0);
     }
@@ -188,4 +188,4 @@ class recordMIDI{
 
 var audioCtx = new AudioContext();
 var midi_recorder = new recordMIDI(audioCtx);
-midi_recorder.recordMIDI();
+midi_recorder.main();
