@@ -192,6 +192,10 @@ class recordMIDI{
     }
 }
 
+
+// var audioCtx = new AudioContext();
+var AudioContext = window.AudioContext || window.webkitAudioContext;
 var audioCtx = new AudioContext();
+
 var midi_recorder = new recordMIDI(audioCtx);
 midi_recorder.main(audioCtx.getMediaStreamDestination().stream);
