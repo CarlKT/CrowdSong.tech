@@ -64,3 +64,7 @@ navigator.mediaDevices.getUserMedia({ audio: true })
             audio.play();
         }
 });
+
+
+
+// audioClip.record()
