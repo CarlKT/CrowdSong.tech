@@ -79,9 +79,9 @@ class recordMIDI{
     noteOn(note, velocity){
         this.activeNotes.push(note);
 
-        this.osc1.cancel();
+        this.osc1.oscCancel();
         this.currentFreq = this.mtof(note);
-        this.osc1.setFrequency(this.currentFreq, this.settings.portamento);
+        this.osc1.setOscFrequency(this.currentFreq, this.settings.portamento);
 
         this.amp.cancel();
 
@@ -97,9 +97,9 @@ class recordMIDI{
             this.currentFreq = null;
             this.amp.setVolume(0.0, this.settings.release);
         } else {
-            this.osc1.cancel();
+            this.osc1.oscCancel();
             this.currentFreq = this.mtof(this.activeNotes[this.activeNotes.length - 1]);
-            this.osc1.setFrequency(this.currentFreq, this.settings.portamento);
+            this.osc1.setOscFrequency(this.currentFreq, this.settings.portamento);
         }
     }
     midiOnMIDImessage(event){
@@ -121,7 +121,7 @@ class recordMIDI{
     recordMIDI(stream){
 
         let chunks = [];
-        let recorder = new MediaRecorder(stream);
+        let mediaRecorder = new MediaRecorder(stream);
 
         audio_record.onclick = function() {
             // Optional count_in feature
