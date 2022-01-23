@@ -12,6 +12,7 @@ class DAW extends Component {
         this.changeBPM = this.changeBPM.bind(this);
         this.playHandler = this.playHandler.bind(this);
         this.recordHandler = this.recordHandler.bind(this);
+        this.restartHandler = this.restartHandler.bind(this);
 
 
         this.state = {
@@ -49,6 +50,11 @@ class DAW extends Component {
         }
     }
 
+    restartHandler() {
+        this.recorder.skipPlayHead(0);
+        this.setState({playing: false})
+    }
+
     changeBPM(bpm) {
         this.setState({bpm});
         this.recorder.bpm = bpm;
@@ -57,7 +63,7 @@ class DAW extends Component {
 
     render() {
         return <div>
-            <ControlStrip recordHandler={this.recordHandler} playHandler={this.playHandler} changeBPM={this.changeBPM} inputs={this.state.audioInputs} recorder={this.recorder}/>
+            <ControlStrip recordHandler={this.recordHandler} playHandler={this.playHandler} restartHandler={this.restartHandler} changeBPM={this.changeBPM} inputs={this.state.audioInputs} recorder={this.recorder}/>
             <Grid tracks={4} bpm={this.state.bpm} recording={this.state.recording} playing={this.state.playing} recorder={this.recorder} song={this.song}/>
         </div>
     }

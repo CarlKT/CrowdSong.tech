@@ -3,7 +3,8 @@ const secondsToBar = (seconds, bpm, timesig) => {
 }
 
 const barToSeconds = (bars, bpm, timesig) => {
-    return bars / (timesig * 60 / bpm)
+    if (bars === 0) return 0;
+    return bars * (timesig * (60 / bpm))
 }
 
 export { secondsToBar, barToSeconds};

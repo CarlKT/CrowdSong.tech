@@ -35,7 +35,7 @@ class ControlStrip extends Component {
                 <input type="number" min="0" max="200" defaultValue="120" onChange={this.changeBPM}/>
             </div>
             <div className="m-1 w-6 h-6 bg-slate-500" />
-            <div className="m-1 w-6 h-6 bg-slate-500" />
+            <div className="m-1 w-6 h-6 bg-slate-500" onClick={this.props.restartHandler}/>
             <div className="m-1 w-6 h-6 bg-slate-500" onClick={this.props.playHandler}/>
             <div className="m-1 w-6 h-6 bg-red-500" onClick={this.props.recordHandler}/>
         </div>

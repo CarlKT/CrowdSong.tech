@@ -51,7 +51,6 @@ class Recorder {
             //this.audioContext.resume();
 
             await this.loadSong()
-            console.log("hi!")
         };
     }
 
@@ -73,6 +72,7 @@ class Recorder {
 
     stopPlaying() {
         this.audioContext.suspend();
+        this.loadSong();
     }
 
     async getAudioInputs() {
@@ -84,17 +84,16 @@ class Recorder {
         for (let i in this.song.tracks) {
             for (let l in this.song.tracks[i]) {
                 const clip = this.song.tracks[i][l];
-                console.log(this.inputRecorder.mimeType);
-                const blob = new Blob([clip.data], {type: this.inputRecorder.mimeType});
-                console.log(await blob.text())
-                const buffer = await this.audioContext.decodeAudioData(await blob.arrayBuffer());
-                const sampleSource = this.audioContext.createBufferSource();
-                sampleSource.buffer = buffer;
-                sampleSource.connect(this.audioContext.destination)
-                console.log(this.audioContext.currentTime + barToSeconds(clip.start, this.bpm, 4))
-                sampleSource.start(this.audioContext.currentTime + barToSeconds(clip.start, this.bpm, 4));
-                console.log("done!")
-            }
+
+                if (clip.start >= this.playhead) {
+                    const blob = new Blob([clip.data], {type: this.inputRecorder.mimeType});
+                    const buffer = await this.audioContext.decodeAudioData(await blob.arrayBuffer());
+                    const sampleSource = this.audioContext.createBufferSource();
+                    sampleSource.buffer = buffer;
+                    sampleSource.connect(this.audioContext.destination)
+                    sampleSource.start(this.audioContext.currentTime + barToSeconds(clip.start - this.playhead, this.bpm, 4)); 
+                }
+           }
         };
     }
 
@@ -104,6 +103,13 @@ class Recorder {
 
     movePlayHead(i) {
         this.playhead = i;
+        this.loadSong();
+    }
+
+    skipPlayHead(i) {
+        this.playhead = i;
+        this.inputRecorder.stop();
+        this.audioContext.suspend();
     }
 
 }
