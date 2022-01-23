@@ -92,7 +92,7 @@ class recordMIDI{
         this.osc_dict = {};
         this.amp_dict = {};
 
-        for (let i = 21; i<108; i++){
+        for (let i = 21; i<88; i++){
             this.osc_dict[i] = new Oscillator(this.ctx);
             this.osc_dict[i].setOscType('sine');
             this.osc_dict[i].setOscFrequency(this.mtof(i));
