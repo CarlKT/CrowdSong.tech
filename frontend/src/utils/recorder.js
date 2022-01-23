@@ -1,9 +1,7 @@
-import Tracks from "../components/grid/Tracks";
-import Song from "./song.js";
+import { barToSeconds } from "./converter"
 
 class Recorder {
-    constructor() {
-        console.log(Song);
+    constructor(song) {
         this.audioContext = null;
         this.fileReader = new FileReader()
 
@@ -12,8 +10,11 @@ class Recorder {
 
         this.inputRecorder = null;
         this.chunks = [];
+        this.recordedTime = 0;
 
-        this.song = new Song();
+        this.selectedTrack = 0;
+
+        this.song = song;
     }
 
     createContext() {
@@ -31,30 +32,47 @@ class Recorder {
             }});
         }
         this.inputRecorder = new MediaRecorder(inputStream);
-        this.inputRecorder.addEventListener("dataavailable", (event) => {this.chunks.push(event.data); console.log(this.chunks)});
+        this.inputRecorder.addEventListener("dataavailable", (event) => {this.chunks.push(event.data)});
         this.inputRecorder.onstop = async (e) => {
+            this.recordedTime = this.audioContext.currentTime - this.recordedTime;
             const blob = new Blob(this.chunks, { type: this.inputRecorder.mimeType}); 
-//            const buffer = await this.audioContext.decodeAudioData(await blob.arrayBuffer());
+
+
+            this.song.addAudioClip(this.playhead, this.recordedTime, this.selectedTrack, await blob.arrayBuffer());
+
 
             this.chunks = [];
-
-            this.song.addAudioClip(this.playhead, this.selectedTrack, await blob.text());
+            this.recordedTime = 0;
             //const sampleSource = this.audioContext.createBufferSource();
             //sampleSource.buffer = buffer;
             //sampleSource.connect(this.audioContext.destination)
             //sampleSource.start(this.audioContext.currentTime + 2);
 
             //this.audioContext.resume();
+
+            await this.loadSong()
+            console.log("hi!")
         };
     }
 
     // TODO: time start & stop with metronome
     startRecordingInput() {
         this.inputRecorder.start();
+        this.audioContext.resume();
+        this.recordedTime = this.audioContext.currentTime;
     }
 
     stopRecordingInput() {
         this.inputRecorder.stop();
+        this.audioContext.suspend();
+    }
+
+    startPlaying() {
+        this.audioContext.resume();
+    }
+
+    stopPlaying() {
+        this.audioContext.suspend();
     }
 
     async getAudioInputs() {
@@ -63,11 +81,31 @@ class Recorder {
     }
 
     async loadSong() {
+        for (let i in this.song.tracks) {
+            for (let l in this.song.tracks[i]) {
+                const clip = this.song.tracks[i][l];
+                console.log(this.inputRecorder.mimeType);
+                const blob = new Blob([clip.data], {type: this.inputRecorder.mimeType});
+                console.log(await blob.text())
+                const buffer = await this.audioContext.decodeAudioData(await blob.arrayBuffer());
+                const sampleSource = this.audioContext.createBufferSource();
+                sampleSource.buffer = buffer;
+                sampleSource.connect(this.audioContext.destination)
+                console.log(this.audioContext.currentTime + barToSeconds(clip.start, this.bpm, 4))
+                sampleSource.start(this.audioContext.currentTime + barToSeconds(clip.start, this.bpm, 4));
+                console.log("done!")
+            }
+        };
+    }
+
+    getClips(i) {
+        return this.song.getClips(i);
     }
 
     movePlayHead(i) {
         this.playhead = i;
     }
+
 }
 
 

@@ -3,6 +3,7 @@ import ControlStrip from "./controls/ControlStrip";
 import Grid from "./grid/Grid";
 
 import Recorder from "../utils/recorder";
+import Song from "../utils/song";
 
 class DAW extends Component {
     constructor(props) {
@@ -21,7 +22,8 @@ class DAW extends Component {
     }
 
     componentDidMount() {
-        this.recorder = new Recorder();
+        this.song = new Song();
+        this.recorder = new Recorder(this.song);
         this.recorder.loadSong();
         this.recorder.createInput();
         this.recorder.getAudioInputs().then(inputs => this.setState({audioInputs: inputs}));
@@ -39,22 +41,24 @@ class DAW extends Component {
 
     playHandler() {
         if (this.state.playing) {
-
+            this.recorder.stopPlaying();
             this.setState({playing: false})
         } else {
-
+            this.recorder.startPlaying();
             this.setState({playing: true})
         }
     }
 
     changeBPM(bpm) {
         this.setState({bpm});
+        this.recorder.bpm = bpm;
+        this.song.bpm = bpm;
     }
 
     render() {
         return <div>
             <ControlStrip recordHandler={this.recordHandler} playHandler={this.playHandler} changeBPM={this.changeBPM} inputs={this.state.audioInputs} recorder={this.recorder}/>
-            <Grid tracks={4} bpm={this.state.bpm} recording={this.state.recording} playing={this.state.playing} recorder={this.recorder}/>
+            <Grid tracks={4} bpm={this.state.bpm} recording={this.state.recording} playing={this.state.playing} recorder={this.recorder} song={this.song}/>
         </div>
     }
 }

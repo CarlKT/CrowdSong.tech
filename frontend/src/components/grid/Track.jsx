@@ -4,8 +4,12 @@ import "./Track.css";
 
 class Track extends Component {
     render() {
+        const clips = [];
+        for (let i in this.props.clips) {
+            clips.push(<Clip key={i} start={this.props.clips[i].start} width={this.props.clips[i].width}></Clip>)
+        }
         return <div className="track">
-            {this.props.clips.map(clip => <Clip width={clip.width} start={clip.start} />)}
+            {clips}
             {this.props.i === this.props.selectedTrack ? 
                 <div className="bg-cyan-600 absolute h-full"
                     style={{

@@ -17,7 +17,10 @@ class Grid extends Component {
             playheadPosition: 0,
             selectedTrack: 0,
         }
+
+        //this.props.recorder.song.onChange(this.updateTracks);
     }
+
 
     jumpPlayhead(i) {
         if (!this.props.recording && !this.props.playing) {
@@ -30,6 +33,7 @@ class Grid extends Component {
 
     selectTrack(i) {
         if (!this.props.recording && !this.props.playing) {
+            this.props.recorder.selectedTrack = i;
             this.setState({
                 selectedTrack: i,
             });
@@ -53,7 +57,7 @@ class Grid extends Component {
                             key={i} i={i} 
                             selectedTrack={this.state.selectedTrack} 
                             recording={this.props.recording} 
-                            clips={[]} 
+                            clips={this.props.song ? this.props.song.tracks[i] : []} 
                             playheadPosition={this.state.playheadPosition}
                             bpm={this.props.bpm}
                         />)
