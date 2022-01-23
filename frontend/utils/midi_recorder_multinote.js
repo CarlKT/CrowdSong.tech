@@ -95,7 +95,7 @@ class recordMIDI{
         this.active_oscs = 0;
         this.active_oscs_arr = [];
 
-        for (let i = 21; i<88; i++){
+        for (let i = 21; i<108; i++){
             this.osc_dict[i] = new Oscillator(this.ctx);
             this.osc_dict[i].setOscType('sine');
             this.osc_dict[i].setOscFrequency(this.mtof(i), this.settings.portamento);
@@ -132,7 +132,8 @@ class recordMIDI{
         this.active_oscs += 1;
         this.active_oscs_arr.push(note);
         for (var i=0; i < this.active_oscs; i++){
-            this.amp_dict[this.active_oscs_arr[i]].gain.value = 1/(this.active_oscs + 0.1);
+            this.amp_dict[this.active_oscs_arr[i]].gain.value = 1/(this.active_oscs + 1);
+            console.log(this.amp_dict[this.active_oscs_arr[i]].gain.value);
         }
         this.amp_dict[note].setVolume(0.5, this.settings.attack);
     }
