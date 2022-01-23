@@ -93,6 +93,7 @@ class recordMIDI{
         this.amp_dict = {};
 
         this.active_oscs = 0;
+        this.active_oscs_arr = [];
 
         for (let i = 21; i<88; i++){
             this.osc_dict[i] = new Oscillator(this.ctx);
@@ -129,7 +130,10 @@ class recordMIDI{
         // this.amp.cancel();
 
         this.active_oscs += 1;
-        this.amp_dict[note].gain.value = 1/this.active_oscs;
+        this.active_oscs_arr.push(note);
+        for (var i=0; i < this.active_oscs; i++){
+            this.amp_dict[this.active_oscs_arr[i]].gain.value = 1/(this.active_oscs + 0.1);
+        }
         this.amp_dict[note].setVolume(0.5, this.settings.attack);
     }
     noteOff(note){
@@ -146,6 +150,10 @@ class recordMIDI{
         //     // this.port_osc.setOscFrequency(this.currentFreq, this.settings.portamento);
         // }
         this.active_oscs -= 1;
+        var index_to_remove = this.active_oscs_arr.indexOf(note);
+        if (index_to_remove > -1) {
+            this.active_oscs_arr.splice(index_to_remove, 1);
+        }
         this.amp_dict[note].setVolume(0.0, this.settings.attack);
     }
     midiOnMIDImessage(event){
