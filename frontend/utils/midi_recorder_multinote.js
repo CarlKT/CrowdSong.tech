@@ -126,21 +126,22 @@ class recordMIDI{
 
         // this.amp.cancel();
 
-        this.amp_dict[note].setVolume(1.0, this.settings.attack);
+        this.amp_dict[note].setVolume(0.5, this.settings.attack);
     }
     noteOff(note){
-        var position = this.activeNotes.indexOf(note);
-        if (position !== -1){
-            this.activeNotes.splice(position, 1);
-        }
-        if (this.activeNotes.length == 0){
-            this.amp_dict[note].cancel();
-            this.amp_dict[note].setVolume(0.0, this.settings.release);
-        } else {
-            this.osc_dict[note].oscCancel();
-            this.currentFreq = this.mtof(this.activeNotes[this.activeNotes.length - 1]);
-            // this.port_osc.setOscFrequency(this.currentFreq, this.settings.portamento);
-        }
+        // var position = this.activeNotes.indexOf(note);
+        // if (position !== -1){
+        //     this.activeNotes.splice(position, 1);
+        // }
+        // if (this.activeNotes.length == 0){
+        //     this.amp_dict[note].cancel();
+        //     this.amp_dict[note].setVolume(0.0, this.settings.release);
+        // } else {
+        //     this.osc_dict[note].oscCancel();
+        //     this.currentFreq = this.mtof(this.activeNotes[this.activeNotes.length - 1]);
+        //     // this.port_osc.setOscFrequency(this.currentFreq, this.settings.portamento);
+        // }
+        this.amp_dict[note].setVolume(0.0, this.settings.attack);
     }
     midiOnMIDImessage(event){
         var data = event.data;
