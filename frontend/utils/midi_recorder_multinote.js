@@ -133,7 +133,7 @@ class recordMIDI{
         this.active_oscs_arr.push(note);
         for (var i=0; i < this.active_oscs; i++){
             this.amp_dict[this.active_oscs_arr[i]].gain.value = 1/(this.active_oscs + 0.1);
-            this.amp_dict[this.active_oscs_arr[i]].setVolume(1(2*this.active_oscs + 0.1), this.settings.attack);
+            this.amp_dict[this.active_oscs_arr[i]].setVolume(1/(2*this.active_oscs + 0.1), this.settings.attack);
             console.log(this.amp_dict[this.active_oscs_arr[i]].gain.value);
         }
         // this.amp_dict[note].setVolume(0.5, this.settings.attack);
