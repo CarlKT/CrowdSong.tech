@@ -41,3 +41,8 @@ class Track {
         }
     }
 }
+
+function sec_to_bar(seconds, bpm, time_sig) {
+    const bars_per_sec = time_sig * 60 / bpm;
+    return bars_per_sec * seconds;
+}
