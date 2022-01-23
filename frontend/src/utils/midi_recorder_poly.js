@@ -1,4 +1,8 @@
-import { barToSeconds } from "./converter"
+const audio_permission = document.querySelector('.permission');
+// const audio_record = document.querySelector('.record');
+// const audio_stop = document.querySelector('.stop');
+// const audio_play = document.querySelector('.play');
+// import { barToSeconds } from "./converter"
 
 // Helper methods for synthesizing sound
 class Oscillator{
@@ -58,10 +62,15 @@ class MidiRecorder {
         this.playhead = 0;
 
         this.inputRecorder = null;
-        this.recorderNode = this.ctx.createMediaStreamDestination();
 
         this.chunks = [];
         this.activeNotes = [];
+
+        this.settings = {
+            attack: 0.05,
+            release: 0.05,
+            portamento: 0.05,
+        };
 
         this.recordedTime = 0;
         this.selectedTrack = 0;
@@ -70,9 +79,14 @@ class MidiRecorder {
     }
 
     createContext() {
-        var audioCtx = new (window.AudioContext || window.webkitAudioContext)();
-        this.prepMidi(audioCtx);
+        this.audioContext = new (window.AudioContext || window.webkitAudioContext)();
+        console.log("Context created, building synth...");
+        
+        this.recorderNode = this.audioContext.createMediaStreamDestination();
+        this.prepMidi(this.audioContext);
         this.audioContext.suspend();
+        
+        console.log("Building synth done.");
     }
 
     async createInput(input) {
@@ -117,12 +131,13 @@ class MidiRecorder {
             let amp = new Amp(ctx);
 
             osc.setOscType('sine');
-            osc.setOscFrequency(this.midi_to_freq(i), this.settings.portamento);
+            osc.setOscFrequency(midi_to_freq(i), this.settings.portamento);
             amp.setVolume(0.0,0);
 
             osc.oscConnect(amp.gain);
             osc.oscStart(ctx.currentTime);
-
+            
+            // console.log(this.recorderNode);
             amp.connect(ctx.destination);
             amp.connect(this.recorderNode);
 
@@ -192,7 +207,7 @@ class MidiRecorder {
         switch (type) {
             case 144:
                 this.noteOn(pitch, velocity/127);
-                console.log(this.midi_to_freq(pitch));
+                console.log(midi_to_freq(pitch));
                 break;
             case 128:
                 this.noteOff(pitch);
@@ -201,18 +216,142 @@ class MidiRecorder {
         }
     }
 
-    main() {
-        audio_permission.onclick = function(){
+    //! DEPRECATED: integrate into createInput
+    recorder() {
 
-            var audioCtx = new (window.AudioContext || window.webkitAudioContext)();
-        
-            var midi_recorder = new recordMIDI(audioCtx);
-            midi_recorder.record();
-        
+        var stream = this.recorderNode.stream;
+
+        let chunks = [];
+        let mediaRecorder = new MediaRecorder(stream);
+
+        audio_record.onclick = function() {
+            // Optional count_in feature
+            // count_in.start();
+            console.log("Recording...");
+            mediaRecorder.start();
+            
+            // playhead.start();
+            audio_stop.disabled = false;
+            audio_record.disabled = true;
+            audio_record.style.background = "red";
+
+            setTimeout(() => {
+                mediaRecorder.stop();
+                
+                audio_stop.disabled = true;
+                audio_record.disabled = false;
+                
+                audio_record.style.background = "";
+                audio_record.style.color = "";
+            }, 3000);   //* Dummy value, to change later
         }
 
+        audio_stop.onclick = function() {
+            mediaRecorder.stop();
+            console.log("Recording stopped...");
+
+            // playhead.stop();
+            audio_stop.disabled = true;
+            audio_record.disabled = false;
+            audio_record.style.background = "";
+            audio_record.style.color = "";
+        }
+
+        mediaRecorder.addEventListener("dataavailable", event => {
+            chunks.push(event.data);
+        })
+
+        // mediaRecorder.onstop = function(e) {
+        //     const blob = new Blob(chunks);
+        //     const audioUrl = URL.createObjectURL(blob);
+        //     const audio = new Audio(audioUrl);
+        //     audio.play();
+        // }
+
+        audio_play.onclick = function () {
+            console.log("Preparing and playing audio");
+            const blob = new Blob(chunks);
+            const audioUrl = URL.createObjectURL(blob);
+            const audio = new Audio(audioUrl);
+            audio.play();
+            console.log("done playing audio");
+        }
 
     }
+
+
+    // Copied from recorder.js
+    startRecordingInput() {
+        this.inputRecorder.start();
+        this.audioContext.resume();
+        this.recordedTime = this.audioContext.currentTime;
+    }
+
+    stopRecordingInput() {
+        this.inputRecorder.stop();
+        this.audioContext.suspend();
+    }
+
+    startPlaying() {
+        this.audioContext.resume();
+    }
+
+    stopPlaying() {
+        this.audioContext.suspend();
+        this.loadSong();
+    }
+
+    async getAudioInputs() {
+        let devices = await navigator.mediaDevices.enumerateDevices();
+        return devices.filter(d => d.kind === "audioinput");
+    }
+
+    async loadSong() {
+        for (let i in this.song.tracks) {
+            for (let l in this.song.tracks[i]) {
+                const clip = this.song.tracks[i][l];
+
+                if (clip.start >= this.playhead) {
+                    const blob = new Blob([clip.data], {type: this.inputRecorder.mimeType});
+                    const buffer = await this.audioContext.decodeAudioData(await blob.arrayBuffer());
+                    const sampleSource = this.audioContext.createBufferSource();
+                    sampleSource.buffer = buffer;
+                    sampleSource.connect(this.audioContext.destination)
+                    sampleSource.start(this.audioContext.currentTime + barToSeconds(clip.start - this.playhead, this.bpm, 4)); 
+                }
+           }
+        };
+    }
+
+    getClips(i) {
+        return this.song.getClips(i);
+    }
+
+    movePlayHead(i) {
+        this.playhead = i;
+        this.loadSong();
+    }
+
+    skipPlayHead(i) {
+        this.playhead = i;
+        this.inputRecorder.stop();
+        this.audioContext.suspend();
+    }
 }
+
+function main() {
+    audio_permission.onclick = function(){
+
+        var audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+    
+        var midi_recorder = new MidiRecorder("test");
+
+        midi_recorder.createContext();
+        midi_recorder.createInput(true);
+        // midi_recorder.record();
+    
+    }
+}
+
 
 main();
