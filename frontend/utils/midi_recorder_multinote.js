@@ -12,7 +12,7 @@ class Oscillator{
         this.osc.type = type;
     }
     setOscFrequency(freq, time){
-        this.osc.frequency.setTargetAtTime(freq, 0, time);
+        this.osc.frequency.setTargetAtTime(freq, 0., time);
     }
     oscStart(pos){
         this.osc.start(pos);
@@ -95,24 +95,23 @@ class recordMIDI{
         for (let i = 21; i<88; i++){
             this.osc_dict[i] = new Oscillator(this.ctx);
             this.osc_dict[i].setOscType('sine');
-            this.osc_dict[i].setOscFrequency(this.mtof(i));
+            this.osc_dict[i].setOscFrequency(this.mtof(i), this.settings.portamento);
             this.amp_dict[i] = new AMP(this.ctx);
-            this.osc_dict[i].oscConnect(this.amp.gain);
+            this.osc_dict[i].oscConnect(this.amp_dict[i].gain);
             this.amp_dict[i].connect(this.ctx.destination);
             this.amp_dict[i].connect(this.recorderNode);
             this.amp_dict[i].setVolume(0.0,0);
 
-            this.osc_dict[i].oscStart(ctx.currentTime);
-
+            this.osc_dict[i].oscStart(this.ctx.currentTime);
         }
 
-        this.port_osc = new Oscillator(this.ctx);
-        this.port_osc.setOscType('sine');
-        this.port_amp = new AMP(this.ctx);
-        this.port_osc.oscConnect(this.port_amp);
-        this.port_amp.connect(this.ctx.destination);
-        this.port_amp.connect(this.recorderNode);
-        this.port_amp.setVolume(1.0,0);
+        // this.port_osc = new Oscillator(this.ctx);
+        // this.port_osc.setOscType('sine');
+        // this.port_amp = new AMP(this.ctx);
+        // this.port_osc.oscConnect(this.port_amp);
+        // this.port_amp.connect(this.ctx.destination);
+        // this.port_amp.connect(this.recorderNode);
+        // this.port_amp.setVolume(1.0,0);
 
     }
     mtof(note){
@@ -140,7 +139,7 @@ class recordMIDI{
         } else {
             this.osc_dict[note].oscCancel();
             this.currentFreq = this.mtof(this.activeNotes[this.activeNotes.length - 1]);
-            this.port_osc.setOscFrequency(this.currentFreq, this.settings.portamento);
+            // this.port_osc.setOscFrequency(this.currentFreq, this.settings.portamento);
         }
     }
     midiOnMIDImessage(event){
