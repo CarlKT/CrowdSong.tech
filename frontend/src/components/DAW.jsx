@@ -3,6 +3,7 @@ import ControlStrip from "./controls/ControlStrip";
 import Grid from "./grid/Grid";
 
 import Recorder from "../utils/recorder";
+import MidiRecorder from "../utils/midi_recorder";
 import Song from "../utils/song";
 
 class DAW extends Component {
@@ -24,6 +25,7 @@ class DAW extends Component {
 
     componentDidMount() {
         this.song = new Song();
+        // this.recorder = new MidiRecorder(this.song);
         this.recorder = new Recorder(this.song);
         this.recorder.loadSong();
         this.recorder.createInput();
